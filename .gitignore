@@ -1,0 +1,9 @@
+# Local-only files in the original working folder
+/index copy.html
+/New Text Document.txt
+/menu.lnk
+/to work on desktop follow this.txt
+
+# Common operating-system files
+.DS_Store
+Thumbs.db

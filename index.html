@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RAVAND CAFÉ 2</title>
+<meta name="theme-color" content="#1f5c4d">
+<meta name="description" content="RAVAND CAFÉ 2 menu and table billing app">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:Amiri;src:url("./Amiri.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+:root{--bg:#f3efe6;--sf:#fffdf8;--tx:#2a2118;--mu:#7a6c5c;--ac:#1f5c4d;--ac2:#b8862f;--bd:#ddd3c0;--op:#f6e2b3;--ok:#cfe6d9;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17130f;--sf:#221c16;--tx:#f1e9db;--mu:#a99a86;--ac:#5fb89e;--ac2:#d9a94d;--bd:#3a3026;--op:#4a3b1c;--ok:#1d3a30}}
+:root[data-theme="dark"]{--bg:#17130f;--sf:#221c16;--tx:#f1e9db;--mu:#a99a86;--ac:#5fb89e;--ac2:#d9a94d;--bd:#3a3026;--op:#4a3b1c;--ok:#1d3a30}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:Amiri,Tahoma,serif;font-size:17px}
+header{position:relative;z-index:10;background:var(--ac);color:#fff;padding:22px 18px;text-align:center}
+header h1{margin:0;font-size:40px;letter-spacing:3px;font-family:"Playfair Display",Georgia,serif;direction:ltr;color:#fff}
+header h1 span{font-size:75px;color:#b88645;line-height:1}
+header p{margin:6px 0 0;font-size:16px;opacity:.92}
+header .info{display:flex;justify-content:center;gap:28px;flex-wrap:wrap;margin-top:8px}
+.settings{position:absolute;top:10px;right:12px;z-index:50;display:flex;flex-direction:row-reverse;align-items:center;gap:0}
+.settings-toggle{width:30px;height:44px;padding:0;border:0;border-radius:9px;background:transparent;color:#000;font-size:22px;line-height:1;cursor:pointer;text-shadow:-1px -1px 0 rgba(255,255,255,.7),1px 1px 0 rgba(0,0,0,.35),2px 3px 3px rgba(0,0,0,.55);transition:transform .15s ease,text-shadow .15s ease}
+.settings-toggle:hover,.settings-toggle:focus-visible{background:rgba(0,0,0,.12);outline:2px solid #fff;outline-offset:2px}
+.settings-toggle:active{transform:translateY(1px);text-shadow:0 1px 0 rgba(255,255,255,.6),1px 2px 2px rgba(0,0,0,.55)}
+.theme-toggle{font-size:20px}
+:root:not([data-theme="dark"]) .theme-toggle{color:#000}
+:root[data-theme="dark"] .theme-toggle{color:#ffd54a}
+.settings-menu{position:absolute;top:50px;right:0;width:min(260px,calc(100vw - 24px));padding:10px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25)}
+.settings-menu:not([hidden]){display:grid;gap:6px}
+.settings-menu .btn{width:100%;margin:0;padding:7px 10px;border:0;border-radius:4px;background:transparent;color:var(--tx);font:inherit;font-weight:400;text-align:right}
+.settings-menu .btn:hover,.settings-menu .btn:focus-visible{background:var(--bg);text-decoration:underline;text-underline-offset:3px}
+main{max-width:1100px;margin:0 auto;padding:18px}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.sum div{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 16px}
+.sum small{color:var(--mu);display:block}
+.sum b{font-size:22px;color:var(--ac)}
+.sum .big{background:var(--ac);border-color:var(--ac)}
+.sum .big small,.sum .big b{color:#fff}
+h2{font-size:20px;margin:0 0 10px}
+.tables-heading{position:relative;display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 10px;padding-top:16px}
+.tables-heading::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;background:linear-gradient(to right,transparent,var(--ac2),var(--bd),var(--ac2),transparent)}
+.tables-heading h1,.tables-heading h2{width:100%;margin:0;text-align:center}
+.menu-preview-button{width:auto;margin:0;padding:2px 10px;font-size:14px;line-height:1.3}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.tb{background:var(--sf);border:2px solid var(--bd);border-radius:12px;padding:14px 6px;text-align:center;cursor:pointer;font:inherit;color:inherit}
+.tb:hover,.tb:focus-visible{border-color:var(--ac);outline:none}
+.tb strong{display:block;font-size:24px}
+.tb span{font-size:14px;color:var(--mu)}
+.tb.open{background:var(--op);border-color:var(--ac2)}
+.tb.selected{outline:3px solid var(--ac);outline-offset:2px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;z-index:20;padding:12px;overflow:auto}
+.ov.on{display:block}
+.pn{background:var(--bg);max-width:960px;margin:0 auto;border-radius:14px;overflow:hidden}
+.ph{display:flex;justify-content:space-between;align-items:center;background:var(--ac);color:#fff;padding:12px 16px}
+.ph h3{margin:0;font-size:22px}
+.x{background:none;border:0;color:#fff;font-size:28px;cursor:pointer;line-height:1}
+.body{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;padding:14px}
+#ov.menu-only .body{grid-template-columns:1fr}
+#ov.menu-only .cart{display:none}
+@media(max-width:720px){.body{grid-template-columns:1fr}}
+.cat{margin:0 0 6px;color:var(--ac2);font-weight:700}
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:14px}
+.it{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px;cursor:pointer;font:inherit;color:inherit;text-align:center}
+.it:hover{border-color:var(--ac)}
+.it small{display:block;color:var(--mu)}
+.cart{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px;align-self:start}
+.row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:6px 0;border-bottom:1px dashed var(--bd)}
+.q{display:flex;align-items:center;gap:6px}
+.q button{width:28px;height:28px;border-radius:50%;border:1px solid var(--bd);background:var(--bg);color:var(--tx);cursor:pointer;font-size:17px}
+.tot{display:flex;justify-content:space-between;font-size:21px;font-weight:700;padding:10px 0;color:var(--ac)}
+.btn{width:100%;border:0;border-radius:9px;padding:11px;font:inherit;font-weight:700;cursor:pointer;margin-top:6px}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.b1{background:var(--ac);color:#fff}.b2{background:var(--ac2);color:#fff}.b3{background:var(--bd);color:var(--tx)}
+.empty{color:var(--mu);text-align:center;padding:14px}
+#receipt{display:none}
+.rr{display:flex;justify-content:space-between;padding:2px 0}
+#rv .pn,#cf .pn{max-width:420px;margin-top:10vh;padding:16px}
+#rvBody{background:#fff;color:#000;padding:14px;border-radius:8px;font-size:15px;margin-bottom:8px}
+#rvBody hr{border:0;border-top:1px dashed #000}
+#cfMsg{font-size:19px;margin:6px 0 12px}
+.two{display:flex;gap:8px}.two .btn{flex:1;width:auto;margin-top:0}
+#incomeReport .pn{max-width:760px;margin:4vh auto;padding:16px}
+.report-scroll{overflow-x:auto}
+.report-table{width:100%;border-collapse:collapse;text-align:center;background:var(--sf)}
+.report-table th,.report-table td{border:1px solid var(--bd);padding:8px}
+.report-table th{background:var(--ac);color:#fff}
+.report-table tfoot{font-weight:700}
+.report-month{margin:14px 0 6px}
+.report-total{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-weight:700}
+#incomePrintHeader{display:none}
+.account-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0}
+.account-summary>div{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px}
+.account-summary small{display:block;color:var(--mu)}
+.account-summary strong{display:block;font-size:20px;color:var(--ac)}
+.account-summary .account-net{background:var(--ac);border-color:var(--ac)}
+.account-summary .account-net small,.account-summary .account-net strong{color:#fff}
+#accountReport .pn{max-width:900px;margin:4vh auto;padding:16px}
+.account-table{min-width:560px}
+.daily-cost-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0}
+.daily-cost-controls label{font-weight:700}
+.daily-cost-controls input{width:auto;margin:0}
+.daily-cost-actions{display:flex;gap:8px;margin:10px 0}
+.daily-cost-actions .btn{flex:1}
+.daily-cost-table{min-width:760px}
+.daily-cost-table input{width:100%;min-width:78px;margin:0;padding:5px;text-align:center}
+.daily-cost-total{font-weight:700}
+#dailyCostsPrintHeader{display:none}
+@media print{
+ @page{size:auto;margin:0}
+ html,body{margin:0!important;padding:0!important;min-height:0!important;background:#fff!important}
+ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body>*:not(#receipt){display:none!important}
+ #receipt{display:block!important;position:static!important;direction:rtl;font-family:Amiri,Tahoma,sans-serif;color:#000;background:#fff;width:100%;max-width:80mm;margin:0 auto;padding:3mm;font-size:13px;overflow-wrap:anywhere}
+ #receipt .rr{display:flex;justify-content:space-between;gap:8px;padding:2px 0}
+ #receipt .rr span:first-child{flex:1;min-width:0}
+ #receipt .rr span:last-child{white-space:nowrap}
+ #receipt hr{border:0;border-top:1px dashed #000}
+ body.print-income-report>*:not(#incomeReport){display:none!important}
+ body.print-income-report #incomeReport{display:block!important;position:static!important;overflow:visible!important;padding:0!important;background:#fff!important}
+ body.print-income-report #incomeReport .pn{max-width:none!important;margin:0!important;padding:0!important;border-radius:0!important;background:#fff!important;color:#000!important;overflow:visible!important}
+ body.print-income-report #incomeReport .pn>*{display:none!important}
+ body.print-income-report #incomeReport #incomePrintHeader{display:block!important;text-align:center;margin:0 0 8px}
+ body.print-income-report #incomeReport #incomePrintHeader h1{font-size:18pt;line-height:1.2;margin:0 0 4px;direction:ltr}
+ body.print-income-report #incomeReport #incomePrintHeader h2{font-size:13pt;line-height:1.2;margin:0}
+ body.print-income-report #incomeReport #incomeMonths,
+ body.print-income-report #incomeReport #incomeMonths>.report-scroll{display:block!important}
+ body.print-income-report #incomeReport #incomeMonths>.report-month{display:none!important}
+ body.print-income-report #incomeReport .report-scroll{overflow:visible!important;page-break-inside:avoid}
+ body.print-income-report #incomeReport .report-table{background:#fff!important;color:#000!important;font-size:8pt;line-height:1}
+ body.print-income-report #incomeReport .report-table th{background:#eee!important;color:#000!important}
+ body.print-income-report #incomeReport .report-table th,
+ body.print-income-report #incomeReport .report-table td{border:1px solid #000!important;padding:1px 3px!important;line-height:1!important}
+ body.print-income-report #incomeReport .report-table tr{page-break-inside:avoid}
+ body.print-daily-costs>*:not(#dailyCosts){display:none!important}
+ body.print-daily-costs #dailyCosts{display:block!important;position:static!important;overflow:visible!important;padding:0!important;background:#fff!important}
+ body.print-daily-costs #dailyCosts .pn{max-width:none!important;margin:0!important;padding:0!important;border-radius:0!important;background:#fff!important;color:#000!important;overflow:visible!important}
+ body.print-daily-costs #dailyCosts .pn>*{display:none!important}
+ body.print-daily-costs #dailyCosts #dailyCostsPrintHeader,
+ body.print-daily-costs #dailyCosts #dailyCostsTableContainer,
+ body.print-daily-costs #dailyCosts #dailyCostsTotal{display:block!important}
+ body.print-daily-costs #dailyCosts #dailyCostsPrintHeader{display:block!important;text-align:center;margin:0 0 8px}
+ body.print-daily-costs #dailyCosts #dailyCostsPrintHeader h1{font-size:18pt;line-height:1.2;margin:0 0 4px;direction:ltr}
+ body.print-daily-costs #dailyCosts #dailyCostsPrintHeader h2{font-size:13pt;line-height:1.2;margin:0}
+ body.print-daily-costs #dailyCostsTableContainer{overflow:visible!important}
+ body.print-daily-costs .daily-cost-table{width:100%;min-width:0!important;background:#fff!important;color:#000!important;font-size:8pt;line-height:1}
+ body.print-daily-costs .daily-cost-table th{background:#eee!important;color:#000!important}
+ body.print-daily-costs .daily-cost-table th,
+ body.print-daily-costs .daily-cost-table td{border:1px solid #000!important;padding:2px!important;line-height:1!important}
+ body.print-daily-costs .daily-cost-table input{border:0!important;background:transparent!important;color:#000!important;padding:0!important;font:inherit!important}
+ body.print-daily-costs .daily-cost-table tr{page-break-inside:avoid}
+ body.print-daily-costs #dailyCostsTotal{font-weight:700!important}
+}
+</style>
+</head>
+<body>
+<header>
+ <div class="settings">
+  <button type="button" class="settings-toggle theme-toggle" id="themeToggle" aria-label="گهورین بۆ بارێ تاری" title="گهورین بۆ بارێ تاری">☾</button>
+  <button type="button" class="settings-toggle" id="settingsToggle" aria-label="ڕێکخستن" aria-controls="settingsMenu" aria-expanded="false">⚙</button>
+  <div class="settings-menu" id="settingsMenu" hidden>
+   <button type="button" class="btn b1" id="backupData"> Back Up Data</button>
+   <button type="button" class="btn b3" id="restoreData"> Restore Data</button>
+   <button type="button" class="btn b3" id="changePin">گهورینا PIN</button>
+  </div>
+ </div>
+ <h1>RAVAND CAFÉ <span>2</span></h1>
+ <div class="info"><p>ژمارا تەلەفۆنێ: <span id="phone">24 88 772 0750</span></p><p> جهێ کافێ: بەروشكێ نزیك خارنگەها ئەزمیر <span id="addr"> || دهوك</span></p></div>
+ <button id="install" class="btn b3" hidden style="max-width:220px">Install App</button>
+</header>
+<main>
+ <section class="sum"> 
+  <div><small>حسابا مێزێن ڤەكری</small><b id="sOpen">0</b></div>
+  <div><small>مێزێن پارەداین (ئەڤروكه)</small><b id="sPaid">0</b></div>
+  <div class="big"><small>کۆژمێ گشتیێ پسولێن ڕۆژێ</small><b id="sAll">0</b></div>
+  <div><small>ژمارا پسولەیێن گرتی</small><b id="sCnt">0</b></div>
+ </section>
+ <div class="tables-heading"><h1 style="text-align: center;">مێزە</h1></div>
+ <div class="menu"><button class="btn b1 menu-preview-button" id="menuOpen">MENU</button></div>
+ <br>
+ <div class="grid" id="grid"></div>
+ <div class="two" style="max-width:560px;margin-top:20px">
+  <button class="btn b3" id="newDay">دەستپێکرنا ڕۆژەكا نوی</button>
+  <button class="btn b1" id="incomeReportOpen">Income</button>
+  <button class="btn b1" id="accountReportOpen">حسابات</button>
+ </div>
+ <div class="two" style="max-width:560px;margin-top:12px">
+  <button class="btn b1" id="addTable">زێدەکرنا مێزەکا نوی</button>
+  <button class="btn b3" id="removeTable" disabled>ژیبرنا مێزەیا هەلبژارتی</button>
+  <button class="btn b1" id="dailyCostsOpen" style="max-width:560px">داخلكرنا مەزاختێن روژانە</button>
+ </div>
+ <input id="restoreFile" type="file" accept=".json,application/json" hidden>
+</main>
+
+<div class="ov" id="ov"><div class="pn">
+ <div class="ph"><h3 id="pt"></h3><button class="x" id="cl" aria-label="داخستن">×</button></div>
+ <div class="body"><div id="menu"></div>
+  <div class="cart"><h2>پسولە</h2><div id="lines"></div>
+   <div class="tot"><span>کۆژمێ گشتی</span><span id="ptot">0</span></div>
+   <button class="btn b2" id="pr">پرینتکرنا پسولێ</button>
+   <button class="btn b1" id="pay">پارە هاتە دان، گرتنا حسابێ</button>
+   <button class="btn b3" id="clr">ڤالاكرنا مێزێ</button>
+  </div></div>
+</div></div>
+<div class="ov" id="cf" style="z-index:40"><div class="pn"><p id="cfMsg"></p><div class="two"><button class="btn b1" id="cfYes">بەڵێ</button><button class="btn b3" id="cfNo">نەخێر</button></div></div></div>
+<div class="ov" id="rv" style="z-index:30"><div class="pn"><div id="rvBody"></div><div class="two"><button class="btn b2" id="rvPrint">پرێنتكرن</button><button class="btn b1" id="rvPdf">هەڵگرتن وەک PDF</button><button class="btn b3" id="rvClose">گرتن</button></div></div></div>
+<div class="ov" id="incomeReport" style="z-index:30"><div class="pn">
+ <div class="ph"><h3>Income</h3><button class="x" id="incomeReportClose" aria-label="داخستن">×</button></div>
+ <div id="incomePrintHeader"><h1>RAVAND CAFE 2</h1><h2 id="incomePrintTitle"></h2></div>
+ <label for="incomeYear">ساڵ:</label>
+ <select id="incomeYear" class="btn b3" style="width:auto;min-width:120px"></select>
+ <input id="incomeMonthSearch" type="search" class="btn b3" style="width:100%;text-align:start" placeholder="لێگەریان بو روژێ یان هەیڤێ (e.g. 27/10/2026, 27, October, 10/2026)" aria-label="Search daily or monthly income">
+ <div class="two">
+  <button class="btn b2" id="incomePrint">پرینتکرنا خشتەیێ هەیڤێ</button>
+  <button class="btn b1" id="incomePdf">هەڵگرتنا خشتەیێ هەیڤێ وەک PDF</button>
+ </div>
+ <div class="report-total"><span>کۆژمێ گشتیێ داهاتێ</span><span id="incomeReportTotal">0</span></div>
+ <div class="report-total"><span>ژمارا پسولەیێن گرتی</span><span id="incomeReportCount">0</span></div>
+ <div id="incomeMonths"></div>
+ </div></div>
+<div class="ov" id="accountReport" style="z-index:30"><div class="pn">
+ <div class="ph"><h3>حسابات</h3><button class="x" id="accountReportClose" aria-label="داخستن">×</button></div>
+ <div class="daily-cost-controls">
+  <label for="accountMonth">هەیڤ:</label><input id="accountMonth" type="month" class="btn b3">
+ </div>
+ <div class="account-summary">
+  <div><small>کۆژمێ گشتیێ داهاتێ</small><strong id="accountIncomeTotal">0</strong></div>
+  <div><small>کۆژمێ مەزاختێن هەیڤێ</small><strong id="accountExpenseTotal">0</strong></div>
+  <div class="account-net"><small>مایی: داهات - مەزاختی</small><strong id="accountRemainder">0</strong></div>
+ </div>
+ <div id="accountTableContainer" class="report-scroll"></div>
+ </div></div>
+<div class="ov" id="dailyCosts" style="z-index:30"><div class="pn">
+ <div class="ph"><h3>داخلكرنا مەزاختێن روژانە</h3><button class="x" id="dailyCostsClose" aria-label="داخستن">×</button></div>
+ <div id="dailyCostsPrintHeader"><h1>RAVAND CAFE 2</h1><h2 id="dailyCostsPrintTitle"></h2></div>
+ <div class="daily-cost-controls">
+  <label for="costMonth">هەیڤ:</label><input id="costMonth" type="month" class="btn b3">
+  <input id="costDaySearch" type="search" class="btn b3" style="flex:1;min-width:220px;text-align:start" placeholder="لێگەریانا روژێ  (وەکی 5، 05/11/2026)" aria-label="لێگەریان بۆ ڕۆژێ">
+ </div>
+ <div class="daily-cost-actions">
+  <button class="btn b1" id="dailyCostsEdit">دەستکاری</button>
+  <button class="btn b1" id="dailyCostsSave" hidden>هەڵگرتن</button> 
+ </div>
+ <div class="two" id="dailyCostsExportActions">
+  <button class="btn b2" id="dailyCostsPrint">پرینتکرنا خشتەیێ هەیڤێ</button>
+  <button class="btn b1" id="dailyCostsPdf">هەڵگرتنا خشتەیێ هەیڤێ وەک PDF</button>
+ </div>
+ <div class="report-total daily-cost-total" id="dailyCostsTotal"><span>کۆژمێ مەزاختێن هەیڤێ</span><span id="dailyCostsTotalAmount">0</span></div>
+ <div id="dailyCostsTableContainer" class="report-scroll"></div>
+ </div></div>
+<div id="receipt"></div>
+
+<script>
+// مینیو: ناڤ و بهایان لڤیرە بگهورە (بها ب دیناری)
+var MENU=[
+ {c:"خوارن ",i:[[" قەلی سێل | گوشت",8000],["قەلی سێل مێلاك",8000],["قەلی سێل | مریشك",6000],["تكه | گوشت",4000],["تكه | مێلاك",4000],["تكه | مریشك",3000],["تكه | چەنگ",3000],["برگەر | گوشت",4000],["برگەر | مریشك",3000],["لەفە",3000],["وەجبه",7000],["مریشك + برنج",5000],["گەس + برنج",5000],["عادی",3000],["قەلی سێل گوشتی + برنج",10000],["قەلی سێل مێلاك + برنج",10000],["قەلی سێل مریشك + برنج",10000],["چلفرا",5000]]},
+ {c:"ڤەخوارنێن  گەرم",i:[["قهوە ",1000],["نێسکافێ",1000],["کەپەچینۆ",1000],["شیر",1000],["چوكولات",1000],["چای",250]]},
+ {c:"ڤەخوارنێن سار",i:[["ئاڤ",250],["وایت",2000],["تایگەر",2000],["سمارت",2000],["باربیكان",2000],["پلنگ",2000],["ئاكشن",2500],["رێدبول",3000],["بومب",3000],["كولا",1000],["فانتا",1000],["سودا",1000],["ئەكمینیا",1000],["عصیر",2000],["فریز",1000]]},
+ {c:"چبس",i:[["جبس",3000],["جبس",2000],["جبس",1000]]},
+ {c:"كێك",i:[["كێك",3000],["كێك",2000],["كیك",1000]]},
+ {c:"نەرگیلە",i:[[" لیمون",6000],["ئنگلیزی ",6000],["تفاح",6000],["علك ",6000],["طبیعی ",10000]]}
+];
+function dateKey(date){
+ return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0");
+}
+function formatReportDate(date,options){
+ var parts=date.split("-").map(Number);
+ if(options && options.day==="2-digit" && options.month==="2-digit" && options.year==="numeric"){
+  return [String(parts[2]).padStart(2,"0"),String(parts[1]).padStart(2,"0"),String(parts[0])].join("/");
+ }
+ return new Intl.DateTimeFormat("en-GB",options).format(new Date(parts[0],parts[1]-1,parts[2]));
+}
+function getReceiptDetails(items){
+ var subtotal=items.reduce(function(a,l){return a+l.p*l.q},0);
+ var fee= subtotal < 10000 ? 5000 : 0;
+ var receiptItems=items.map(function(l){return {n:l.n,p:l.p,q:l.q}});
+ if(fee){receiptItems.push({n:"حەقێ میزێ",p:5000,q:1});}
+ return {items:receiptItems,total:subtotal+fee};
+}
+var DEFAULT_TABLE_COUNT=40,S={t:{},paid:0,cnt:0,tables:[],nextTableId:41},cur=null,selectedTable=null;
+var printedIncomeMonthHeading=null,printedIncomeMonthNextSibling=null;
+var printedDailyCostsSearch=null;
+var dailyCostsEditing=false;
+var dailyCostsEditDate=null;
+function applyTheme(theme,persist){
+ if(theme!=="light"&&theme!=="dark")return;
+ document.documentElement.dataset.theme=theme;
+ document.querySelector('meta[name="theme-color"]').content=theme==="dark"?"#17130f":"#1f5c4d";
+ var nextTheme=theme==="dark"?"light":"dark";
+ var toggleLabel=nextTheme==="dark"?"گهورین بو بارێ تاری":"گهورین بو بارێ روناهی";
+ $("themeToggle").setAttribute("aria-label",toggleLabel);
+ $("themeToggle").title=toggleLabel;
+ if(!persist)return;
+ try{localStorage.setItem("ravand2.theme",theme)}catch(error){
+  console.error("Could not save the selected color theme:",error);
+  alert("The selected theme could not be saved on this device.");
+ }
+}
+try{
+ var savedTheme=localStorage.getItem("ravand2.theme");
+ if(savedTheme==="light"||savedTheme==="dark")applyTheme(savedTheme,false);
+}catch(error){console.error("Could not read the saved color theme:",error)}
+if(!document.documentElement.dataset.theme){
+ applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light",false);
+}
+try{var raw=localStorage.getItem("ravand2");if(raw)S=JSON.parse(raw)}catch(e){}
+if(!S.dailyCosts||typeof S.dailyCosts!=="object"||Array.isArray(S.dailyCosts))S.dailyCosts={};
+Object.keys(S.dailyCosts).forEach(function(date){
+ var costs=S.dailyCosts[date];
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!costs||typeof costs!=="object"||Array.isArray(costs)){
+  delete S.dailyCosts[date];return;
+ }
+ ["rent","wage","electric","water"].forEach(function(key){
+  var amount=Number(costs[key]);
+  costs[key]=Number.isFinite(amount)&&amount>=0?amount:0;
+ });
+});
+if(!Array.isArray(S.tables)){
+ S.tables=[];
+ for(var initialTable=1;initialTable<=DEFAULT_TABLE_COUNT;initialTable++)S.tables.push(initialTable);
+}
+S.tables=S.tables.filter(function(t,i,a){return Number.isInteger(t)&&t>0&&a.indexOf(t)===i});
+var highestTable=DEFAULT_TABLE_COUNT;
+S.tables.forEach(function(t){if(t>highestTable)highestTable=t});
+Object.keys(S.t||{}).forEach(function(t){var id=+t;if(Number.isInteger(id)&&id>highestTable)highestTable=id});
+S.nextTableId=Math.max(Number.isInteger(S.nextTableId)?S.nextTableId:DEFAULT_TABLE_COUNT+1,highestTable+1);
+var migratedIncome=false;
+if(!Array.isArray(S.income)){
+ S.income=[];
+ if(Number(S.paid)>0||Number(S.cnt)>0){
+  S.income.push({date:dateKey(new Date()),amount:Number(S.paid)||0,count:Number(S.cnt)||0});
+ }
+ migratedIncome=true;
+}
+S.income=S.income.filter(function(entry){
+ return entry&&/^\d{4}-\d{2}-\d{2}$/.test(entry.date)&&Number.isFinite(Number(entry.amount))&&Number(entry.amount)>=0&&Number.isInteger(Number(entry.count))&&Number(entry.count)>=0;
+});
+function save(){
+ try{localStorage.setItem("ravand2",JSON.stringify(S));return true}
+ catch(error){console.error("Could not save cafe data:",error);alert("The data could not be saved on this device.");return false}
+}
+if(migratedIncome)save();
+if(S.incomeHistoryResetVersion!==1){
+ var previousIncome=S.income.slice(),previousPaid=S.paid,previousCount=S.cnt,previousResetVersion=S.incomeHistoryResetVersion;
+ S.income=[];S.paid=0;S.cnt=0;S.incomeHistoryResetVersion=1;
+ if(!save()){
+  S.income=previousIncome;S.paid=previousPaid;S.cnt=previousCount;
+  if(previousResetVersion===undefined)delete S.incomeHistoryResetVersion;
+  else S.incomeHistoryResetVersion=previousResetVersion;
+ }
+}
+function fmt(n){return Number(n).toLocaleString("en-US")+" د.ع"}
+function lines(t){return S.t[t]||[]}
+function total(t){return lines(t).reduce(function(a,l){return a+l.p*l.q},0)}
+function $(id){return document.getElementById(id)}
+function render(){
+ var g="",open=0;
+ S.tables.forEach(function(t){var tt=total(t),has=lines(t).length>0;if(has)open+=tt;
+  g+='<button class="tb'+(has?' open':'')+(selectedTable===t?' selected':'')+'" data-t="'+t+'"><strong>'+t+'</strong><span>'+(has?fmt(tt):'ڤالا')+'</span></button>'});
+ $("grid").innerHTML=g;
+ $("removeTable").disabled=selectedTable===null||S.tables.indexOf(selectedTable)===-1;
+ $("sOpen").textContent=fmt(open);$("sPaid").textContent=fmt(S.paid);
+ $("sAll").textContent=fmt(open+S.paid);$("sCnt").textContent=S.cnt;
+}
+function reportDateMatches(date,query){
+ if(!query)return true;
+ var numeric=query.match(/^(\d{1,4})[./-](\d{1,2})(?:[./-](\d{1,4}))?$/);
+ if(numeric){
+  var day,month,year;
+  if(numeric[1].length===4){
+   year=numeric[1];month=numeric[2];day=numeric[3];
+  }else{
+   day=numeric[1];month=numeric[2];year=numeric[3];
+  }
+  return date.slice(8)===String(day||"").padStart(2,"0")&&
+   date.slice(5,7)===String(month).padStart(2,"0")&&(!year||date.slice(0,4)===year);
+ }
+ if(/^\d{1,2}$/.test(query))return date.slice(8)===query.padStart(2,"0");
+ var fullDate=formatReportDate(date,{day:"2-digit",month:"long",year:"numeric"}).toLocaleLowerCase();
+ if(fullDate.indexOf(query)!==-1)return true;
+ var textDate=query.match(/^(\d{1,2})\s+(.+?)(?:\s+(\d{4}))?$/);
+ if(textDate){
+  var monthName=formatReportDate(date,{month:"long"}).toLocaleLowerCase();
+  return date.slice(8)===textDate[1].padStart(2,"0")&&monthName.indexOf(textDate[2])!==-1&&
+   (!textDate[3]||date.slice(0,4)===textDate[3]);
+ }
+ return false;
+}
+function reportMonthMatches(month,query){
+ if(!query)return true;
+ var display=formatReportDate(month+"-01",{month:"long",year:"numeric"}).toLocaleLowerCase();
+ var numeric=month.slice(5)+"/"+month.slice(0,4);
+ var isoMonth=month.match(/^(\d{4})-(\d{1,2})$/);
+ return display.indexOf(query)!==-1||numeric===query||
+  (isoMonth&&query===isoMonth[1]+"-"+String(Number(isoMonth[2])).padStart(2,"0"));
+}
+function getIncomeMonths(){
+ var months={};
+ S.income.forEach(function(entry){
+  var month=entry.date.slice(0,7);
+  if(!months[month])months[month]={days:{},amount:0,count:0};
+  var monthData=months[month];
+  if(!monthData.days[entry.date])monthData.days[entry.date]={amount:0,count:0};
+  monthData.days[entry.date].amount+=Number(entry.amount);
+  monthData.days[entry.date].count+=Number(entry.count);
+  monthData.amount+=Number(entry.amount);monthData.count+=Number(entry.count);
+ });
+ return months;
+}
+function renderIncomeReport(){
+ var years={},incomeMonths=getIncomeMonths();
+ Object.keys(incomeMonths).forEach(function(month){
+  var year=month.slice(0,4);
+  if(!years[year])years[year]={};
+  years[year][month]=incomeMonths[month];
+ });
+ var yearSelect=$("incomeYear"),today=new Date(),currentYear=String(today.getFullYear()),currentMonth=dateKey(today).slice(0,7);
+ var selectedYear=yearSelect.value||currentYear;
+ years[selectedYear]=years[selectedYear]||{};
+ if(selectedYear===currentYear&&!years[selectedYear][currentMonth]){
+  years[selectedYear][currentMonth]={days:{},amount:0,count:0};
+ }
+ var yearOptions=Object.keys(years).sort().reverse(),options="";
+ yearOptions.forEach(function(year){options+='<option value="'+year+'">'+year+'</option>'});
+ yearSelect.innerHTML=options;yearSelect.value=selectedYear;
+ var months=years[selectedYear],monthSearch=$("incomeMonthSearch").value.trim().toLocaleLowerCase();
+ var monthKeys=Object.keys(months).sort().filter(function(month){
+  var data=months[month];
+  return reportMonthMatches(month,monthSearch)||
+   Object.keys(data.days).some(function(date){return reportDateMatches(date,monthSearch)});
+ });
+ var yearIncome=0,yearCount=0,monthTables="";
+ monthKeys.forEach(function(month){
+  var data=months[month],dailyRows="",filteredAmount=0,filteredCount=0;
+  var year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7));
+  var daysInMonth=new Date(year,monthNumber,0).getDate();
+  for(var dayNumber=1;dayNumber<=daysInMonth;dayNumber++){
+   var date=month+"-"+String(dayNumber).padStart(2,"0");
+   if(!reportMonthMatches(month,monthSearch)&&!reportDateMatches(date,monthSearch))continue;
+   var day=data.days[date]||{amount:0,count:0};
+   filteredAmount+=day.amount;filteredCount+=day.count;
+   dailyRows+='<tr><td dir="ltr">'+formatReportDate(date,{day:"2-digit",month:"2-digit",year:"numeric"})+'</td><td>'+fmt(day.amount)+'</td><td>'+day.count+'</td></tr>';
+  }
+  yearIncome+=filteredAmount;yearCount+=filteredCount;
+  if(!dailyRows)dailyRows='<tr><td colspan="3" class="empty">چ روژ نە هاتنە دیتن</td></tr>';
+  monthTables+='<h3 class="report-month" data-month="'+month+'" dir="ltr">'+formatReportDate(month+"-01",{month:"long",year:"numeric"})+'</h3><div class="report-scroll"><table class="report-table"><thead><tr><th>بەروار</th><th>کۆژمێ گشتیێ پسولێن ڕۆژێ</th><th>ژمارا پسولەیێن گرتی</th></tr></thead><tbody>'+dailyRows+'</tbody><tfoot><tr><td>کۆژمێ هەیڤێ</td><td>'+fmt(filteredAmount)+'</td><td>'+filteredCount+'</td></tr></tfoot></table></div>';
+ });
+ $("incomeMonths").innerHTML=monthTables||'<div class="empty">چ داهاتێن سالێ نینن</div>';
+ $("incomeReportTotal").textContent=fmt(yearIncome);
+ $("incomeReportCount").textContent=yearCount;
+}
+function renderAccountReport(){
+ var month=$("accountMonth").value||dateKey(new Date()).slice(0,7);
+ $("accountMonth").value=month;
+ var incomeMonth=getIncomeMonths()[month]||{days:{},amount:0,count:0};
+ var year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7));
+ var daysInMonth=new Date(year,monthNumber,0).getDate(),rows="",expenseTotal=0;
+ for(var dayNumber=1;dayNumber<=daysInMonth;dayNumber++){
+  var date=month+"-"+String(dayNumber).padStart(2,"0");
+  var incomeDay=incomeMonth.days[date]||{amount:0,count:0},costs=S.dailyCosts[date]||{},dayExpenses=0;
+  dailyCostKinds.forEach(function(kind){dayExpenses+=Number(costs[kind.key])||0});
+  expenseTotal+=dayExpenses;
+  rows+='<tr><td dir="ltr">'+formatReportDate(date,{day:"2-digit",month:"2-digit",year:"numeric"})+'</td>'+ 
+   '<td>'+fmt(incomeDay.amount)+'</td><td>'+fmt(dayExpenses)+'</td><td>'+fmt(incomeDay.amount-dayExpenses)+'</td></tr>';
+ }
+ var remainder=incomeMonth.amount-expenseTotal;
+ $("accountIncomeTotal").textContent=fmt(incomeMonth.amount);
+ $("accountExpenseTotal").textContent=fmt(expenseTotal);
+ $("accountRemainder").textContent=fmt(remainder);
+ $("accountTableContainer").innerHTML='<table class="report-table account-table"><thead><tr><th>رێكەفت</th><th>داهاتێ ڕۆژێ</th><th>مەزاختێن ڕۆژێ</th><th>ماییێ ڕۆژێ</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>کۆژمێ هەیڤێ</td><td>'+fmt(incomeMonth.amount)+'</td><td>'+fmt(expenseTotal)+'</td><td>'+fmt(remainder)+'</td></tr></tfoot></table>';
+}
+var dailyCostKinds=[
+ {key:"rent",label:"کرێیا جهی"},
+ {key:"wage",label:"کرێیا ڕۆژانە"},
+ {key:"electric",label:"کارەبا"},
+ {key:"water",label:"ئاڤ"}
+];
+function renderDailyCosts(){
+ var month=$("costMonth").value||dateKey(new Date()).slice(0,7);
+ $("costMonth").value=month;
+ var today=dateKey(new Date());
+ var query=$("costDaySearch").value.trim().toLocaleLowerCase();
+ var year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7));
+ var daysInMonth=new Date(year,monthNumber,0).getDate(),rows="",totals={rent:0,wage:0,electric:0,water:0},monthTotal=0,hasEditableDay=false;
+ for(var dayNumber=1;dayNumber<=daysInMonth;dayNumber++){
+  var date=month+"-"+String(dayNumber).padStart(2,"0"),costs=S.dailyCosts[date]||{},dayTotal=0;
+  dailyCostKinds.forEach(function(kind){var amount=Number(costs[kind.key])||0;totals[kind.key]+=amount;dayTotal+=amount});
+  monthTotal+=dayTotal;
+  if(!reportDateMatches(date,query))continue;
+  var locked=date<today;
+  if(!locked)hasEditableDay=true;
+  rows+='<tr><td dir="ltr">'+formatReportDate(date,{day:"2-digit",month:"2-digit",year:"numeric"})+'</td>';
+  dailyCostKinds.forEach(function(kind){
+   var amount=Number(costs[kind.key])||0;
+   rows+='<td><input type="number" min="0" step="any" inputmode="decimal" '+(dailyCostsEditing&&!locked?"":"readonly")+' data-cost-date="'+date+'" data-cost-kind="'+kind.key+'" value="'+(amount||"")+'" aria-label="'+formatReportDate(date,{day:"2-digit",month:"2-digit",year:"numeric"})+" - "+kind.label+'"></td>';
+  });
+  rows+='<td>'+fmt(dayTotal)+'</td></tr>';
+ }
+ if(!rows)rows='<tr><td colspan="6" class="empty">هیچ ڕۆژەک لەم گەڕانێدا نەهاتە دیتن</td></tr>';
+ var footer='<tr><td>کۆی مانگێ</td>';
+ dailyCostKinds.forEach(function(kind){footer+='<td>'+fmt(totals[kind.key])+'</td>'});
+ footer+='<td>'+fmt(monthTotal)+'</td></tr>';
+ $("dailyCostsTableContainer").innerHTML='<table class="report-table daily-cost-table"><thead><tr><th>بەروار</th><th>کرێیا جهی</th><th>کرێیا ڕۆژانە</th><th>کارەبا</th><th>ئاڤ</th><th>کۆژمێ ڕۆژێ</th></tr></thead><tbody>'+rows+'</tbody><tfoot>'+footer+'</tfoot></table>';
+ $("dailyCostsTotalAmount").textContent=fmt(monthTotal);
+ $("dailyCostsEdit").disabled=dailyCostsEditing||!hasEditableDay;
+ $("dailyCostsEdit").hidden=dailyCostsEditing;
+ $("dailyCostsSave").hidden=!dailyCostsEditing;
+ $("costMonth").disabled=dailyCostsEditing;
+ $("costDaySearch").disabled=dailyCostsEditing;
+ $("dailyCostsPrint").disabled=dailyCostsEditing;
+ $("dailyCostsPdf").disabled=dailyCostsEditing;
+}
+function renderPanel(){
+ var h="";
+ MENU.forEach(function(m,ci){h+='<p class="cat">'+m.c+'</p><div class="items">';
+  m.i.forEach(function(x,ii){var tag=cur===null?"div":"button";h+='<'+tag+' class="it" data-c="'+ci+'" data-i="'+ii+'">'+x[0]+'<small>'+fmt(x[1])+'</small></'+tag+'>'});h+='</div>'});
+ $("menu").innerHTML=h;
+ var L=cur==null?[]:lines(cur),r="";
+ L.forEach(function(l,k){r+='<div class="row"><span>'+l.n+'<br><small>'+fmt(l.p)+'</small></span><span class="q"><button data-k="'+k+'" data-d="1">+</button><b>'+l.q+'</b><button data-k="'+k+'" data-d="-1">−</button></span></div>'});
+ $("lines").innerHTML=r||'<div class="empty">چ تشت نە هاتینە هەلبژارتن</div>';
+ $("ptot").textContent=fmt(cur==null?0:total(cur));
+}
+var receiptData=null;
+function pdfBytes(text){return new TextEncoder().encode(text)}
+function canvasToPdf(canvas,pageWidthMm){
+ var width=canvas.width,height=canvas.height,jpeg=canvas.toDataURL("image/jpeg",0.94);
+ var binary=atob(jpeg.split(",")[1]),image=new Uint8Array(binary.length);
+ for(var i=0;i<binary.length;i++)image[i]=binary.charCodeAt(i);
+ var pageWidth=pageWidthMm/25.4*72,pageHeight=height/width*pageWidth;
+ var content="q "+pageWidth+" 0 0 "+pageHeight+" 0 0 cm /Im0 Do Q";
+ var chunks=[],offset=0,offsets=[0];
+ function append(bytes){chunks.push(bytes);offset+=bytes.length}
+ function addObject(number,parts){
+  offsets[number]=offset;append(pdfBytes(number+" 0 obj\n"));
+  parts.forEach(function(part){append(typeof part==="string"?pdfBytes(part):part)});
+  append(pdfBytes("\nendobj\n"));
+ }
+ append(pdfBytes("%PDF-1.4\n"));
+ addObject(1,["<< /Type /Catalog /Pages 2 0 R >>"]);
+ addObject(2,["<< /Type /Pages /Kids [3 0 R] /Count 1 >>"]);
+ addObject(3,["<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageWidth+" "+pageHeight+"] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>"]);
+ addObject(4,["<< /Type /XObject /Subtype /Image /Width "+width+" /Height "+height+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+image.length+" >>\nstream\n",image,"\nendstream"]);
+ addObject(5,["<< /Length "+pdfBytes(content).length+" >>\nstream\n"+content+"\nendstream"]);
+ var xrefOffset=offset,xref="xref\n0 6\n0000000000 65535 f \n";
+ for(var object=1;object<=5;object++)xref+=String(offsets[object]).padStart(10,"0")+" 00000 n \n";
+ xref+="trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n"+xrefOffset+"\n%%EOF";
+ append(pdfBytes(xref));
+ return new Blob(chunks,{type:"application/pdf"});
+}
+function makeReceiptPdf(data){
+ var width=640,padding=24,lineHeight=36,canvas=document.createElement("canvas"),ctx=canvas.getContext("2d");
+ if(!ctx)throw new Error("Canvas is unavailable in this browser.");
+ ctx.font="26px Amiri, Tahoma, serif";
+ function wrap(text,maxWidth){
+  var words=String(text).split(/\s+/),result=[],line="";
+  words.forEach(function(word){
+   var next=line?line+" "+word:word;
+   if(line&&ctx.measureText(next).width>maxWidth){result.push(line);line=word}else line=next;
+  });
+  if(line)result.push(line);
+  return result.length?result:[""];
+ }
+ var itemRows=data.items.map(function(item){
+  return {label:wrap(item.n+" × "+item.q,width-padding*2-150),price:fmt(item.p*item.q)};
+ });
+ var height=padding+50+lineHeight*2+20+lineHeight+20;
+ itemRows.forEach(function(row){height+=Math.max(1,row.label.length)*lineHeight});
+ height+=lineHeight*2+padding+lineHeight+8;
+ canvas.width=width;canvas.height=height;
+ ctx=canvas.getContext("2d");
+ ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);ctx.fillStyle="#000";ctx.textBaseline="top";
+ var y=padding;
+ ctx.direction="ltr";ctx.textAlign="center";ctx.font="bold 34px Amiri, Tahoma, serif";ctx.fillText("RAVAND CAFÉ 2",width/2,y);y+=50;
+ ctx.direction="rtl";ctx.font="26px Amiri, Tahoma, serif";ctx.fillText($("phone").textContent,width/2,y);y+=lineHeight;
+ ctx.fillText($("addr").textContent,width/2,y);y+=lineHeight+12;
+ function rule(){
+  ctx.beginPath();ctx.setLineDash([6,5]);ctx.moveTo(padding,y);ctx.lineTo(width-padding,y);ctx.strokeStyle="#000";ctx.stroke();ctx.setLineDash([]);y+=16;
+ }
+ rule();
+ ctx.font="24px Amiri, Tahoma, serif";ctx.direction="rtl";ctx.textAlign="right";
+ ctx.fillText("ژمارا مێزێ: "+data.table,width-padding,y);
+ ctx.direction="ltr";ctx.textAlign="left";ctx.fillText(data.date,padding,y);y+=lineHeight;
+ rule();
+ ctx.font="26px Amiri, Tahoma, serif";ctx.direction="rtl";
+ itemRows.forEach(function(row){
+  ctx.textAlign="right";
+  row.label.forEach(function(text,index){ctx.fillText(text,width-padding,y+index*lineHeight)});
+  ctx.direction="ltr";ctx.textAlign="left";ctx.fillText(row.price,padding,y);ctx.direction="rtl";
+  y+=Math.max(1,row.label.length)*lineHeight;
+ });
+ rule();
+ ctx.font="bold 28px Amiri, Tahoma, serif";ctx.direction="rtl";ctx.textAlign="right";ctx.fillText("کۆژمێ گشتی",width-padding,y);
+ ctx.direction="ltr";ctx.textAlign="left";ctx.fillText(fmt(data.total),padding,y);y+=lineHeight+8;
+ rule();
+ ctx.direction="rtl";ctx.textAlign="center";ctx.font="26px Amiri, Tahoma, serif";ctx.fillText("سوپاس بۆ سەرەدانكرنا هەوە",width/2,y);
+ return canvasToPdf(canvas,80);
+}
+function makeIncomeReportPdf(month){
+ var width=1240,height=1754,padding=60,rowHeight=42,canvas=document.createElement("canvas");
+ canvas.width=width;canvas.height=height;
+ var ctx=canvas.getContext("2d");
+ if(!ctx)throw new Error("Canvas is unavailable in this browser.");
+ ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);ctx.fillStyle="#000";ctx.textBaseline="middle";
+ var monthTitle=formatReportDate(month+"-01",{month:"long",year:"numeric"});
+ ctx.direction="ltr";ctx.textAlign="center";ctx.font="bold 42px Amiri, Tahoma, serif";
+ ctx.fillText("RAVAND CAFE 2",width/2,80);
+ ctx.direction="rtl";ctx.font="bold 34px Amiri, Tahoma, serif";
+ ctx.fillText("خشتەیێ پسولە وكوژمێ گشتی یێ هەیڤا : "+monthTitle,width/2,137);
+ var left=padding,right=width-padding,dateEdge=left+500,amountEdge=left+870,tableTop=185;
+ var year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7));
+ var daysInMonth=new Date(year,monthNumber,0).getDate(),days={},monthTotal=0,monthCount=0;
+ S.income.forEach(function(entry){
+  if(entry.date.slice(0,7)!==month)return;
+  if(!days[entry.date])days[entry.date]={amount:0,count:0};
+  days[entry.date].amount+=Number(entry.amount);days[entry.date].count+=Number(entry.count);
+  monthTotal+=Number(entry.amount);monthCount+=Number(entry.count);
+ });
+ function cellText(text,x,y,direction,align,font){
+  ctx.direction=direction;ctx.textAlign=align;ctx.font=font;ctx.fillText(text,x,y);
+ }
+ function line(y){
+  ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.strokeStyle="#000";ctx.lineWidth=1;ctx.stroke();
+ }
+ ctx.fillStyle="#eee";ctx.fillRect(left,tableTop,right-left,rowHeight);
+ cellText("رێكەفت",dateEdge-12,tableTop+rowHeight/2,"rtl","right","bold 23px Amiri, Tahoma, serif");
+ cellText("کۆژمێ گشتیێ پسولێن ڕۆژێ",(dateEdge+amountEdge)/2,tableTop+rowHeight/2,"rtl","center","bold 22px Amiri, Tahoma, serif");
+ cellText("ژمارا پسولەیێن گرتی",(amountEdge+right)/2,tableTop+rowHeight/2,"rtl","center","bold 22px Amiri, Tahoma, serif");
+ line(tableTop);line(tableTop+rowHeight);
+ var y=tableTop+rowHeight;
+ for(var dayNumber=1;dayNumber<=daysInMonth;dayNumber++){
+  var date=month+"-"+String(dayNumber).padStart(2,"0"),day=days[date]||{amount:0,count:0};
+  y+=rowHeight;
+  if(dayNumber%2===0){ctx.fillStyle="#f5f5f5";ctx.fillRect(left,y-rowHeight,right-left,rowHeight)}
+  cellText(formatReportDate(date,{day:"2-digit",month:"long",year:"numeric"}),dateEdge-12,y-rowHeight/2,"ltr","right","20px Amiri, Tahoma, serif");
+  cellText(fmt(day.amount),(dateEdge+amountEdge)/2,y-rowHeight/2,"ltr","center","20px Amiri, Tahoma, serif");
+  cellText(String(day.count),(amountEdge+right)/2,y-rowHeight/2,"ltr","center","20px Amiri, Tahoma, serif");
+  line(y);
+ }
+ var footerHeight=48;
+ ctx.fillStyle="#eee";ctx.fillRect(left,y,right-left,footerHeight);
+ cellText("کۆژمێ هەیڤێ",dateEdge-12,y+footerHeight/2,"rtl","right","bold 22px Amiri, Tahoma, serif");
+ cellText(fmt(monthTotal),(dateEdge+amountEdge)/2,y+footerHeight/2,"ltr","center","bold 22px Amiri, Tahoma, serif");
+ cellText(String(monthCount),(amountEdge+right)/2,y+footerHeight/2,"ltr","center","bold 22px Amiri, Tahoma, serif");
+ line(y);line(y+footerHeight);
+ [dateEdge,amountEdge].forEach(function(x){
+  ctx.beginPath();ctx.moveTo(x,tableTop);ctx.lineTo(x,y+footerHeight);ctx.strokeStyle="#000";ctx.lineWidth=1;ctx.stroke();
+ });
+ ctx.beginPath();ctx.moveTo(left,tableTop);ctx.lineTo(left,y+footerHeight);ctx.lineTo(right,y+footerHeight);ctx.lineTo(right,tableTop);ctx.stroke();
+ return canvasToPdf(canvas,210);
+}
+function makeDailyCostsPdf(month){
+ var width=1754,height=1240,padding=60,rowHeight=26,headerHeight=62,tableTop=220,canvas=document.createElement("canvas");
+ canvas.width=width;canvas.height=height;
+ var ctx=canvas.getContext("2d");
+ if(!ctx)throw new Error("Canvas is unavailable in this browser.");
+ ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);ctx.fillStyle="#000";ctx.textBaseline="middle";
+ var monthTitle=formatReportDate(month+"-01",{month:"long",year:"numeric"});
+ ctx.direction="ltr";ctx.textAlign="center";ctx.font="bold 42px Amiri, Tahoma, serif";ctx.fillText("RAVAND CAFE 2",width/2,75);
+ ctx.direction="rtl";ctx.font="bold 34px Amiri, Tahoma, serif";ctx.fillText("خشتەیێ مەزاختێن ڕۆژانە یێ هەیڤا : "+monthTitle,width/2,135);
+ var columns=[padding,390,660,1010,1260,1500,width-padding],headers=["رێكەفت","کرێیا جهی","کرێیا ڕۆژانە","کارەبا","ئاڤ","کۆژمێ ڕۆژێ"];
+ function cellText(text,x,y,direction,align,font){ctx.direction=direction;ctx.textAlign=align;ctx.font=font;ctx.fillText(text,x,y)}
+ function line(y){ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(width-padding,y);ctx.strokeStyle="#000";ctx.lineWidth=1;ctx.stroke()}
+ ctx.fillStyle="#eee";ctx.fillRect(padding,tableTop,width-padding*2,headerHeight);
+ headers.forEach(function(label,index){cellText(label,(columns[index]+columns[index+1])/2,tableTop+headerHeight/2,"rtl","center","bold 22px Amiri, Tahoma, serif")});
+ line(tableTop);line(tableTop+headerHeight);
+ var year=Number(month.slice(0,4)),monthNumber=Number(month.slice(5,7)),daysInMonth=new Date(year,monthNumber,0).getDate(),totals={rent:0,wage:0,electric:0,water:0},monthTotal=0,y=tableTop+headerHeight;
+ for(var dayNumber=1;dayNumber<=daysInMonth;dayNumber++){
+  var date=month+"-"+String(dayNumber).padStart(2,"0"),costs=S.dailyCosts[date]||{},values=[],dayTotal=0;
+  dailyCostKinds.forEach(function(kind){var amount=Number(costs[kind.key])||0;values.push(amount);totals[kind.key]+=amount;dayTotal+=amount});
+  monthTotal+=dayTotal;
+  y+=rowHeight;
+  if(dayNumber%2===0){ctx.fillStyle="#f5f5f5";ctx.fillRect(padding,y-rowHeight,width-padding*2,rowHeight)}
+  cellText(formatReportDate(date,{day:"2-digit",month:"long",year:"numeric"}),(columns[0]+columns[1])/2,y-rowHeight/2,"ltr","center","18px Amiri, Tahoma, serif");
+  values.forEach(function(amount,index){cellText(fmt(amount),(columns[index+1]+columns[index+2])/2,y-rowHeight/2,"ltr","center","18px Amiri, Tahoma, serif")});
+  cellText(fmt(dayTotal),(columns[5]+columns[6])/2,y-rowHeight/2,"ltr","center","bold 18px Amiri, Tahoma, serif");
+  line(y);
+ }
+ var footerHeight=48;
+ ctx.fillStyle="#eee";ctx.fillRect(padding,y,width-padding*2,footerHeight);
+ cellText("کۆژمێ هەیڤێ",(columns[0]+columns[1])/2,y+footerHeight/2,"rtl","center","bold 20px Amiri, Tahoma, serif");
+ values=[];
+ dailyCostKinds.forEach(function(kind){values.push(totals[kind.key])});
+ values.forEach(function(amount,index){cellText(fmt(amount),(columns[index+1]+columns[index+2])/2,y+footerHeight/2,"ltr","center","bold 19px Amiri, Tahoma, serif")});
+ cellText(fmt(monthTotal),(columns[5]+columns[6])/2,y+footerHeight/2,"ltr","center","bold 19px Amiri, Tahoma, serif");
+ line(y);line(y+footerHeight);
+ columns.slice(1,-1).forEach(function(x){ctx.beginPath();ctx.moveTo(x,tableTop);ctx.lineTo(x,y+footerHeight);ctx.strokeStyle="#000";ctx.lineWidth=1;ctx.stroke()});
+ ctx.beginPath();ctx.moveTo(padding,tableTop);ctx.lineTo(padding,y+footerHeight);ctx.lineTo(width-padding,y+footerHeight);ctx.lineTo(width-padding,tableTop);ctx.stroke();
+ return canvasToPdf(canvas,297);
+}
+function downloadPdf(blob,filename){
+ var url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+ window.setTimeout(function(){URL.revokeObjectURL(url)},60000);
+}
+function saveDailyCostsPdf(){
+ var month=$("costMonth").value||dateKey(new Date()).slice(0,7);
+ var filename="Ravand-Cafe-Daily-Costs-"+month+".pdf";
+ try{
+  var pdf=makeDailyCostsPdf(month);
+  if(window.showSaveFilePicker){
+   window.showSaveFilePicker({suggestedName:filename,types:[{description:"PDF document",accept:{"application/pdf":[".pdf"]}}]}).then(function(handle){
+    return handle.createWritable().then(function(writable){return writable.write(pdf).then(function(){return writable.close()})});
+   }).catch(function(error){
+    if(error.name!=="AbortError"){console.error("Could not save the monthly daily-costs PDF:",error);alert("The monthly expenses PDF could not be saved. Check the browser's file permissions and try again.")}
+   });
+   return;
+  }
+  downloadPdf(pdf,filename);
+ }catch(error){
+  console.error("Could not create the monthly daily-costs PDF:",error);
+  alert("The monthly expenses PDF could not be created in this browser. Try the Print button instead.");
+ }
+}
+function downloadReceiptPdf(blob){
+ var url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download="Ravand-Cafe-table-"+receiptData.table+".pdf";
+ if("download" in link){
+  document.body.appendChild(link);link.click();link.remove();
+ }else if(!window.open(url,"_blank")){
+  URL.revokeObjectURL(url);alert("The PDF could not be opened. Allow pop-ups or try the Print button.");
+  return;
+ }
+ window.setTimeout(function(){URL.revokeObjectURL(url)},60000);
+}
+function saveReceiptPdf(){
+ if(!receiptData){alert("Open a receipt before saving it as PDF.");return}
+ var isMobile=navigator.userAgentData&&typeof navigator.userAgentData.mobile==="boolean"
+  ?navigator.userAgentData.mobile:/Android|iPhone|iPad|iPod|IEMobile|Windows Phone/i.test(navigator.userAgent||"");
+ try{
+  var pdf=makeReceiptPdf(receiptData);
+  if(!isMobile&&window.showSaveFilePicker){
+   window.showSaveFilePicker({
+    suggestedName:"Ravand-Cafe-table-"+receiptData.table+".pdf",
+    types:[{description:"PDF document",accept:{"application/pdf":[".pdf"]}}]
+   }).then(function(handle){
+    return handle.createWritable().then(function(writable){
+     return writable.write(pdf).then(function(){return writable.close()});
+    });
+   }).catch(function(error){
+    if(error.name!=="AbortError"){
+     console.error("Could not save the receipt PDF:",error);
+     alert("The receipt PDF could not be saved. Check the browser's file permissions and try again.");
+    }
+   });
+   return;
+  }
+  if(!isMobile){downloadReceiptPdf(pdf);return}
+  if(typeof File==="undefined"){downloadReceiptPdf(pdf);return}
+  var file=new File([pdf],"Ravand-Cafe-table-"+receiptData.table+".pdf",{type:"application/pdf"});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   navigator.share({files:[file],title:"RAVAND CAFÉ 2 receipt"}).catch(function(error){
+    if(error.name!=="AbortError"){console.error("Could not share the receipt PDF:",error);alert("The PDF could not be shared. Try the Print button instead.")}
+   });
+   return;
+  }
+   downloadReceiptPdf(pdf);
+  }catch(error){
+   console.error("Could not create the receipt PDF:",error);
+   alert("The receipt PDF could not be created in this browser. Try the Print button instead.");
+  }
+}
+function saveIncomeReportPdf(){
+  var monthHeading=$("incomeMonths").querySelector(".report-month");
+  if($("incomeMonths").querySelectorAll(".report-month").length!==1){
+   alert("Search for one month before saving its income table.");
+   return;
+  }
+  var month=monthHeading.dataset.month;
+  var filename="Ravand-Cafe-Income-"+formatReportDate(month+"-01",{month:"long",year:"numeric"}).replace(/\s+/g,"-")+".pdf";
+  try{
+   var pdf=makeIncomeReportPdf(month);
+   if(window.showSaveFilePicker){
+    window.showSaveFilePicker({
+     suggestedName:filename,
+     types:[{description:"PDF document",accept:{"application/pdf":[".pdf"]}}]
+    }).then(function(handle){
+     return handle.createWritable().then(function(writable){
+      return writable.write(pdf).then(function(){return writable.close()});
+     });
+    }).catch(function(error){
+     if(error.name!=="AbortError"){
+      console.error("Could not save the monthly income PDF:",error);
+      alert("The monthly income PDF could not be saved. Check the browser's file permissions and try again.");
+     }
+    });
+    return;
+   }
+   var isMobile=navigator.userAgentData&&typeof navigator.userAgentData.mobile==="boolean"
+    ?navigator.userAgentData.mobile:/Android|iPhone|iPad|iPod|IEMobile|Windows Phone/i.test(navigator.userAgent||"");
+   if(isMobile&&typeof File!=="undefined"&&navigator.share&&navigator.canShare){
+    var file=new File([pdf],filename,{type:"application/pdf"});
+    if(navigator.canShare({files:[file]})){
+     navigator.share({files:[file],title:"RAVAND CAFE 2 monthly income"}).catch(function(error){
+      if(error.name!=="AbortError"){
+       console.error("Could not share the monthly income PDF:",error);
+       alert("The monthly income PDF could not be shared. Try downloading it again.");
+      }
+     });
+     return;
+    }
+   }
+   var url=URL.createObjectURL(pdf),link=document.createElement("a");
+   link.href=url;link.download=filename;document.body.appendChild(link);link.click();link.remove();
+   window.setTimeout(function(){URL.revokeObjectURL(url)},60000);
+  }catch(error){
+   console.error("Could not create the monthly income PDF:",error);
+   alert("The monthly income PDF could not be created in this browser.");
+  }
+}
+function open(t){cur=t;$("pt").textContent="مێزە "+t;$("ov").classList.remove("menu-only");$("ov").classList.add("on");renderPanel()}
+function close(){$("ov").classList.remove("on","menu-only");cur=null;render()}
+ $("menuOpen").onclick=function(){cur=null;$("pt").textContent="مینیو";$("ov").classList.add("menu-only","on");renderPanel()};
+var tableClickTimer=null;
+$("grid").onclick=function(e){var b=e.target.closest(".tb");if(!b)return;
+ var table=+b.dataset.t;
+ clearTimeout(tableClickTimer);
+ tableClickTimer=setTimeout(function(){selectedTable=table;open(table);render()},250);
+};
+$("grid").ondblclick=function(e){var b=e.target.closest(".tb");if(!b)return;
+ clearTimeout(tableClickTimer);tableClickTimer=null;close();selectedTable=+b.dataset.t;render();
+};
+$("cl").onclick=close;
+$("menu").onclick=function(e){var b=e.target.closest(".it");if(!b||cur==null)return;
+ var x=MENU[b.dataset.c].i[b.dataset.i],L=S.t[cur]=lines(cur),f=L.find(function(l){return l.n===x[0]&&l.p===x[1]});
+ if(f)f.q++;else L.push({n:x[0],p:x[1],q:1});save();renderPanel()};
+$("lines").onclick=function(e){var b=e.target.closest("button");if(!b||cur==null)return;
+ var L=lines(cur),l=L[+b.dataset.k];if(!l)return; l.q+=+b.dataset.d;if(l.q<1)L.splice(+b.dataset.k,1);save();renderPanel()};
+var cfCb=null;
+function ask(m,cb){$("cfMsg").textContent=m;cfCb=cb;$("cf").classList.add("on")}
+$("cfYes").onclick=function(){$("cf").classList.remove("on");var f=cfCb;cfCb=null;if(f)f()};
+$("cfNo").onclick=function(){$("cf").classList.remove("on");cfCb=null};
+function hashPin(pin){
+ if(!window.crypto||!window.crypto.subtle) return Promise.reject(new Error("Secure PIN storage is unavailable in this browser."));
+ return window.crypto.subtle.digest("SHA-256",new TextEncoder().encode(pin)).then(function(hash){
+  return Array.from(new Uint8Array(hash)).map(function(byte){return byte.toString(16).padStart(2,"0")}).join("");
+ });
+}
+function authorizeOwner(){
+ var savedPin;
+ try{savedPin=localStorage.getItem("ravand2.ownerPinHash")}catch(error){
+  console.error("Could not read the owner PIN:",error);alert("The owner PIN could not be read from this device.");return Promise.resolve(false);
+ }
+ if(savedPin){
+  var enteredPin=window.prompt("Enter the owner PIN:");
+  if(enteredPin===null)return Promise.resolve(false);
+  return hashPin(enteredPin).then(function(hash){
+   if(hash===savedPin)return true;
+   alert("Incorrect owner PIN.");return false;
+  }).catch(function(error){
+   console.error("Could not verify the owner PIN:",error);alert("The owner PIN could not be verified.");return false;
+  });
+ }
+ var newPin=window.prompt("Set an owner PIN for this device (at least 4 characters):");
+ if(newPin===null)return Promise.resolve(false);
+ if(newPin.length<4){alert("The owner PIN must be at least 4 characters.");return Promise.resolve(false)}
+ var confirmPin=window.prompt("Enter the owner PIN again to confirm:");
+ if(newPin!==confirmPin){alert("The owner PINs did not match.");return Promise.resolve(false)}
+ return hashPin(newPin).then(function(hash){
+  localStorage.setItem("ravand2.ownerPinHash",hash);return true;
+ }).catch(function(error){
+  console.error("Could not save the owner PIN:",error);alert("The owner PIN could not be saved on this device.");return false;
+ });
+}
+function changeOwnerPin(){
+ var savedPin;
+ try{savedPin=localStorage.getItem("ravand2.ownerPinHash")}catch(error){
+  console.error("Could not read the owner PIN before changing it:",error);
+  alert("The owner PIN could not be read from this device.");return;
+ }
+ var authorization=savedPin?authorizeOwner():Promise.resolve(true);
+ authorization.then(function(authorized){
+  if(!authorized)return;
+  var newPin=window.prompt("Enter a new owner PIN (at least 4 characters):");
+  if(newPin===null)return;
+  if(newPin.length<4){alert("The owner PIN must be at least 4 characters.");return}
+  var confirmPin=window.prompt("Enter the new owner PIN again to confirm:");
+  if(newPin!==confirmPin){alert("The owner PINs did not match.");return}
+  hashPin(newPin).then(function(hash){
+   try{localStorage.setItem("ravand2.ownerPinHash",hash)}
+   catch(error){
+    console.error("Could not save the new owner PIN:",error);
+    alert("The new owner PIN could not be saved on this device.");return;
+   }
+   alert("The owner PIN was changed successfully.");
+  }).catch(function(error){
+   console.error("Could not create a hash for the new owner PIN:",error);
+   alert("The new owner PIN could not be saved securely.");
+  });
+ });
+}
+function createBackup(){
+ var ownerPinHash;
+ try{ownerPinHash=localStorage.getItem("ravand2.ownerPinHash")}catch(error){
+  console.error("Could not read the owner PIN for backup:",error);
+  alert("The owner PIN settings could not be included in the backup.");return;
+ }
+ var backup={format:"ravand-cafe-backup",version:1,createdAt:new Date().toISOString(),data:S,ownerPinHash:ownerPinHash};
+ var blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json"});
+ var url=URL.createObjectURL(blob),link=document.createElement("a");
+ link.href=url;link.download="Ravand-Cafe-Backup-"+dateKey(new Date())+".json";
+ document.body.appendChild(link);link.click();link.remove();
+ window.setTimeout(function(){URL.revokeObjectURL(url)},60000);
+}
+function validateBackup(backup){
+ if(!backup||backup.format!=="ravand-cafe-backup"||backup.version!==1||
+  !backup.data||typeof backup.data!=="object"||Array.isArray(backup.data)){
+  throw new Error("This is not a supported Ravand Cafe backup file.");
+ }
+ var data=backup.data;
+ if(!data.t||typeof data.t!=="object"||Array.isArray(data.t)||
+  !Array.isArray(data.tables)||!data.tables.every(function(table){return Number.isInteger(table)&&table>0})||
+  !Array.isArray(data.income)||!data.income.every(function(entry){
+   return entry&&/^\d{4}-\d{2}-\d{2}$/.test(entry.date)&&Number.isFinite(Number(entry.amount))&&
+    Number(entry.amount)>=0&&Number.isInteger(Number(entry.count))&&Number(entry.count)>=0;
+  })||
+  !data.dailyCosts||typeof data.dailyCosts!=="object"||Array.isArray(data.dailyCosts)||
+  !Object.keys(data.dailyCosts).every(function(date){
+   var costs=data.dailyCosts[date];
+   return /^\d{4}-\d{2}-\d{2}$/.test(date)&&costs&&typeof costs==="object"&&!Array.isArray(costs)&&
+    ["rent","wage","electric","water"].every(function(key){
+     return Number.isFinite(Number(costs[key]))&&Number(costs[key])>=0;
+    });
+  })){
+  throw new Error("The backup file contains incomplete or invalid café data.");
+ }
+ if(backup.ownerPinHash!==null&&
+  (typeof backup.ownerPinHash!=="string"||!/^[a-f0-9]{64}$/i.test(backup.ownerPinHash))){
+  throw new Error("The backup file contains invalid owner PIN settings.");
+ }
+ return backup;
+}
+function restoreBackup(backup){
+ var validated=validateBackup(backup),serialized=JSON.stringify(validated.data),previousData,previousPin;
+ try{
+  previousData=localStorage.getItem("ravand2");
+  previousPin=localStorage.getItem("ravand2.ownerPinHash");
+  localStorage.setItem("ravand2",serialized);
+  if(validated.ownerPinHash===null)localStorage.removeItem("ravand2.ownerPinHash");
+  else localStorage.setItem("ravand2.ownerPinHash",validated.ownerPinHash);
+ }catch(error){
+  try{
+   if(previousData===null)localStorage.removeItem("ravand2");
+   else if(previousData!==undefined)localStorage.setItem("ravand2",previousData);
+   if(previousPin===null)localStorage.removeItem("ravand2.ownerPinHash");
+   else if(previousPin!==undefined)localStorage.setItem("ravand2.ownerPinHash",previousPin);
+  }catch(rollbackError){console.error("Could not roll back an incomplete backup restore:",rollbackError)}
+  console.error("Could not restore café data from backup:",error);
+  alert("The backup could not be restored on this device. Existing data was preserved where possible.");
+  return false;
+ }
+ return true;
+}
+$("addTable").onclick=function(){
+ authorizeOwner().then(function(authorized){
+  if(!authorized)return;
+  var table=1;
+  while(S.tables.indexOf(table)!==-1||lines(table).length)table++;
+  S.tables.push(table);selectedTable=table;
+  if(!save()){S.tables.pop();selectedTable=null}
+  render();
+ });
+};
+$("removeTable").onclick=function(){
+ if(selectedTable===null||S.tables.indexOf(selectedTable)===-1)return;
+ authorizeOwner().then(function(authorized){
+  if(!authorized)return;
+  var table=selectedTable;
+  ask("مێزا "+table+" ژێببەم؟ ئەگەر حساب تێدا هەبیت، دێ هێتە ژێبرن.",function(){
+   if(S.tables.indexOf(table)===-1)return;
+   var oldTables=S.tables.slice(),oldOrders=S.t,remaining=S.tables.filter(function(t){return t!==table}).sort(function(a,b){return a-b}),renumberedOrders={};
+   remaining.forEach(function(oldTable,i){if(oldOrders[oldTable]!==undefined)renumberedOrders[i+1]=oldOrders[oldTable]});
+   S.tables=remaining.map(function(t,i){return i+1});S.t=renumberedOrders;selectedTable=null;
+   if(!save()){S.tables=oldTables;S.t=oldOrders;selectedTable=table}
+   render();
+  });
+ });
+};
+$("rvClose").onclick=function(){$("rv").classList.remove("on")};
+$("rvPrint").onclick=function(){window.print()};
+$("rvPdf").onclick=saveReceiptPdf;
+$("themeToggle").onclick=function(){
+ var currentTheme=document.documentElement.dataset.theme||"light";
+ applyTheme(currentTheme==="dark"?"light":"dark",true);
+};
+$("settingsToggle").onclick=function(){
+ var menu=$("settingsMenu"),open=menu.hidden;
+ menu.hidden=!open;$("settingsToggle").setAttribute("aria-expanded",String(open));
+};
+document.addEventListener("click",function(event){
+ if(event.target.closest(".settings"))return;
+ $("settingsMenu").hidden=true;$("settingsToggle").setAttribute("aria-expanded","false");
+});
+document.addEventListener("keydown",function(event){
+ if(event.key!=="Escape")return;
+ $("settingsMenu").hidden=true;$("settingsToggle").setAttribute("aria-expanded","false");
+});
+$("backupData").onclick=function(){
+ $("settingsMenu").hidden=true;$("settingsToggle").setAttribute("aria-expanded","false");
+ authorizeOwner().then(function(authorized){if(authorized)createBackup()});
+};
+$("restoreData").onclick=function(){
+ $("settingsMenu").hidden=true;$("settingsToggle").setAttribute("aria-expanded","false");
+ var savedPin;
+ try{savedPin=localStorage.getItem("ravand2.ownerPinHash")}catch(error){
+  console.error("Could not read the owner PIN before restoring:",error);
+  alert("The owner PIN could not be read from this device.");return;
+ }
+ var authorization=savedPin?authorizeOwner():Promise.resolve(true);
+ authorization.then(function(authorized){
+  if(authorized)$("restoreFile").click();
+ });
+};
+$("changePin").onclick=function(){
+ $("settingsMenu").hidden=true;$("settingsToggle").setAttribute("aria-expanded","false");
+ changeOwnerPin();
+};
+$("restoreFile").onchange=function(){
+ var file=this.files&&this.files[0];
+ if(!file)return;
+ if(file.size>15*1024*1024){
+  alert("This backup file is too large to restore.");
+  this.value="";return;
+ }
+ var input=this;
+ var reader=new FileReader();
+ reader.onerror=function(){
+  console.error("Could not read the selected café backup file:",reader.error);
+  alert("The backup file could not be read.");
+  input.value="";
+ };
+ reader.onload=function(){
+  var backup;
+  try{backup=validateBackup(JSON.parse(String(reader.result)))}
+  catch(error){
+   console.error("The selected file is not a valid café backup:",error);
+   alert(error.message||"The selected file is not a valid café backup.");
+   input.value="";return;
+  }
+  ask("Restore this backup? It will replace all café data and the PIN on this device.",function(){
+   if(restoreBackup(backup))window.location.reload();
+  });
+  input.value="";
+ };
+ reader.readAsText(file);
+};
+$("incomeReportOpen").onclick=function(){
+ authorizeOwner().then(function(authorized){
+  if(!authorized)return;
+  renderIncomeReport();$("incomeReport").classList.add("on");
+ });
+};
+$("incomeReportClose").onclick=function(){$("incomeReport").classList.remove("on")};
+$("accountReportOpen").onclick=function(){
+ authorizeOwner().then(function(authorized){
+  if(!authorized)return;
+  $("accountMonth").value=dateKey(new Date()).slice(0,7);
+  renderAccountReport();$("accountReport").classList.add("on");
+ });
+};
+$("accountReportClose").onclick=function(){$("accountReport").classList.remove("on")};
+$("accountMonth").onchange=renderAccountReport;
+$("incomeYear").onchange=renderIncomeReport;
+$("incomeMonthSearch").oninput=renderIncomeReport;
+$("incomePdf").onclick=saveIncomeReportPdf;
+$("incomePrint").onclick=function(){
+ var monthHeading=$("incomeMonths").querySelector(".report-month");
+ if($("incomeMonths").querySelectorAll(".report-month").length!==1){
+  alert("Search for one month before printing its income table.");
+  return;
+ }
+ var month=monthHeading.textContent;
+ $("incomePrintTitle").textContent="خشتەیێ پسولە وكوژمێ گشتی یێ هەیڤا : "+month;
+ printedIncomeMonthHeading=monthHeading;
+ printedIncomeMonthNextSibling=monthHeading.nextSibling;
+ monthHeading.remove();
+ var pageStyle=document.createElement("style");
+ pageStyle.id="incomePrintPageStyle";
+ pageStyle.textContent="@page{size:A4 portrait;margin:8mm}";
+ document.head.appendChild(pageStyle);
+ document.body.classList.add("print-income-report");
+ window.print();
+};
+$("dailyCostsOpen").onclick=function(){
+ authorizeOwner().then(function(authorized){
+  if(!authorized)return;
+  $("costMonth").value=$("costMonth").value||dateKey(new Date()).slice(0,7);
+  renderDailyCosts();$("dailyCosts").classList.add("on");
+ });
+};
+$("dailyCostsClose").onclick=function(){
+ if(dailyCostsEditing){alert("Save your expense changes before closing the table.");return}
+ $("dailyCosts").classList.remove("on");
+};
+$("costMonth").onchange=renderDailyCosts;
+$("costDaySearch").oninput=renderDailyCosts;
+$("dailyCostsEdit").onclick=function(){
+ if(dailyCostsEditing)return;
+ $("dailyCostsEdit").disabled=true;
+ authorizeOwner().then(function(authorized){
+  if(!authorized){renderDailyCosts();return}
+  if(dailyCostsEditing)return;
+  $("costDaySearch").value="";
+  dailyCostsEditing=true;dailyCostsEditDate=dateKey(new Date());renderDailyCosts();
+  var firstInput=$("dailyCostsTableContainer").querySelector("input:not([readonly])");
+  if(firstInput)firstInput.focus();
+ });
+};
+$("dailyCostsSave").onclick=function(){
+ if(!dailyCostsEditing)return;
+ var today=dateKey(new Date());
+ if(dailyCostsEditDate!==today){
+  dailyCostsEditing=false;dailyCostsEditDate=null;renderDailyCosts();
+  alert("The day has changed. Unsaved changes were discarded, and previous days are locked.");
+  return;
+ }
+ var inputs=$("dailyCostsTableContainer").querySelectorAll("input[data-cost-date]"),updates={},previous={};
+ for(var i=0;i<inputs.length;i++){
+  var input=inputs[i],date=input.dataset.costDate;
+  if(date<today)continue;
+  var amount=input.value===""?0:Number(input.value);
+  if(!Number.isFinite(amount)||amount<0){
+   alert("Enter a valid non-negative expense amount.");
+   input.focus();return;
+  }
+  if(!updates[date])updates[date]={rent:0,wage:0,electric:0,water:0};
+  updates[date][input.dataset.costKind]=amount;
+ }
+ Object.keys(updates).forEach(function(date){
+  previous[date]=S.dailyCosts[date]?Object.assign({},S.dailyCosts[date]):null;
+  S.dailyCosts[date]=updates[date];
+ });
+ if(!save()){
+  Object.keys(previous).forEach(function(date){
+   if(previous[date])S.dailyCosts[date]=previous[date];
+   else delete S.dailyCosts[date];
+  });
+  return;
+ }
+ dailyCostsEditing=false;dailyCostsEditDate=null;renderDailyCosts();
+};
+window.setInterval(function(){
+ if(!dailyCostsEditing||dailyCostsEditDate===dateKey(new Date()))return;
+ dailyCostsEditing=false;dailyCostsEditDate=null;renderDailyCosts();
+ alert("The day has changed. Unsaved changes were discarded, and previous days are locked.");
+},30000);
+$("dailyCostsPdf").onclick=saveDailyCostsPdf;
+$("dailyCostsPrint").onclick=function(){
+ var month=$("costMonth").value||dateKey(new Date()).slice(0,7);
+ printedDailyCostsSearch=$("costDaySearch").value;
+ $("costDaySearch").value="";
+ renderDailyCosts();
+ $("dailyCostsPrintTitle").textContent="خشتەیێ مەزاختێن ڕۆژانە یێ هەیڤا : "+formatReportDate(month+"-01",{month:"long",year:"numeric"});
+ var pageStyle=document.createElement("style");
+ pageStyle.id="dailyCostsPrintPageStyle";pageStyle.textContent="@page{size:A4 landscape;margin:8mm}";
+ document.head.appendChild(pageStyle);
+ document.body.classList.add("print-daily-costs");
+ window.print();
+};
+window.addEventListener("afterprint",function(){
+ document.body.classList.remove("print-income-report");
+ if(printedIncomeMonthHeading){
+  $("incomeMonths").insertBefore(printedIncomeMonthHeading,printedIncomeMonthNextSibling);
+  printedIncomeMonthHeading=null;printedIncomeMonthNextSibling=null;
+ }
+ var pageStyle=$("incomePrintPageStyle");
+ if(pageStyle)pageStyle.remove();
+ document.body.classList.remove("print-daily-costs");
+ if(printedDailyCostsSearch!==null){
+  $("costDaySearch").value=printedDailyCostsSearch;
+  printedDailyCostsSearch=null;renderDailyCosts();
+ }
+ var costsPageStyle=$("dailyCostsPrintPageStyle");
+ if(costsPageStyle)costsPageStyle.remove();
+});
+$("clr").onclick=function(){ask("حسابا ڤێ مێزێ بهێتە ژیبرن ؟",function(){delete S.t[cur];save();close()})};
+$("pay").onclick=function(){if(!lines(cur).length)return;
+ ask("پارێ میزی هاتە وەرگرتن ؟ حسابا مێزێ دێ چیتە سەر کۆژمێ ڕۆژێ و مێزە دێ ڤالا بیت.",function(){
+  var table=cur,amount=total(table),paidLines=lines(table).slice();
+  var receiptData=getReceiptDetails(paidLines);
+  var totalWithFee=receiptData.total;
+  S.paid+=totalWithFee;S.cnt++;
+  S.income.push({date:dateKey(new Date()),amount:totalWithFee,count:1});
+  delete S.t[table];
+  if(!save()){S.paid-=totalWithFee;S.cnt--;S.income.pop();S.t[table]=paidLines;render();return}
+  close();
+ })};
+$("pr").onclick=function(){var L=lines(cur);if(!L.length)return;
+ var d=new Date().toLocaleString("en-GB"),receiptDetail=getReceiptDetails(L),h='<div style="text-align:center"><b style="font-size:18px">RAVAND CAFÉ 2</b><br>'+$("phone").textContent+'<br>'+$("addr").textContent+'</div><hr><div class="rr"><b>ژمارا مێزێ: '+cur+'</b><span dir="ltr">'+d+'</span></div><hr>';
+ receiptDetail.items.forEach(function(l){h+='<div class="rr"><span>'+l.n+' × '+l.q+'</span><span>'+fmt(l.p*l.q)+'</span></div>'});
+ h+='<hr><div class="rr"><b>کۆژمێ گشتی</b><b>'+fmt(receiptDetail.total)+'</b></div><hr><div style="text-align:center">سوپاس بۆ سەرەدانكرنا هەوە</div>';
+ receiptData={table:cur,date:d,items:receiptDetail.items,total:receiptDetail.total};
+ $("receipt").innerHTML=h;$("rvBody").innerHTML=h;$("rv").classList.add("on")};
+$("newDay").onclick=function(){ask("کۆژمێ ڕۆژێ دێ هێتە سفر كرن . تو یێ پشت راستی؟",function(){S.paid=0;S.cnt=0;save();render()})};
+render();
+if("serviceWorker" in navigator){
+ window.addEventListener("load",function(){
+  navigator.serviceWorker.register("./sw.js").catch(function(error){
+   console.error("App could not be prepared for offline use:",error);
+  });
+ });
+}
+var installPrompt=null,installButton=$("install");
+window.addEventListener("beforeinstallprompt",function(event){
+ event.preventDefault();installPrompt=event;installButton.hidden=false;
+});
+installButton.onclick=function(){
+ if(!installPrompt)return;
+ installPrompt.prompt();
+ installPrompt.userChoice.then(function(){installPrompt=null;installButton.hidden=true});
+};
+window.addEventListener("appinstalled",function(){
+ installPrompt=null;installButton.hidden=true;
+});
+</script>
+</body>
+</html>
